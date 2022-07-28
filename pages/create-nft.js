@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import { create as ipfsHttpClient } from "ipfs-http-client";
 import { useRouter } from "next/router";
 import Web3Modal from "web3modal";
+import axios from "axios";
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
@@ -16,6 +17,9 @@ export default function CreateItem() {
     price: "0.0",
     name: "",
     description: "",
+    ownership: "",
+    status: "",
+    warranty: "",
   });
   const router = useRouter();
 
@@ -32,12 +36,24 @@ export default function CreateItem() {
     }
   }
   async function uploadToIPFS() {
-    const { name, description, price } = formInput;
-    if (!name || !description || !price || !fileUrl) return;
+    const { name, description, price, ownership, status, warranty } = formInput;
+    if (
+      !name ||
+      !description ||
+      !price ||
+      !ownership ||
+      !status ||
+      !warranty ||
+      !fileUrl
+    )
+      return;
     /* first, upload to IPFS */
     const data = JSON.stringify({
       name,
       description,
+      ownership,
+      status,
+      warranty,
       image: fileUrl,
     });
     try {
@@ -71,7 +87,7 @@ export default function CreateItem() {
     );
 
     let listingPrice = await contract.getListingPrice();
- 
+
     listingPrice = listingPrice.toString();
     console.log("urldone6");
     let transaction = await contract.createToken(url, price, {
@@ -79,6 +95,28 @@ export default function CreateItem() {
     });
 
     await transaction.wait();
+    const item = {
+      name: formInput.name,
+      description: formInput.description,
+      ownership: formInput.ownership,
+      status: formInput.status,
+      warranty: formInput.warranty,
+      url: url,
+    };
+    axios({
+      method: "post",
+      url: "http://localhost:4000/",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: item,
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
     router.push("/");
   }
@@ -87,31 +125,45 @@ export default function CreateItem() {
     <div className="flex justify-center">
       <div className="w-1/2 flex flex-col pb-12">
         <input
-          placeholder="Asset Name"
+          placeholder="Product Name"
           className="mt-8 border rounded p-4"
           onChange={(e) =>
             updateFormInput({ ...formInput, name: e.target.value })
           }
         />
         <textarea
-          placeholder="Asset Description"
-          className="mt-2 border rounded p-4"
+          placeholder="Product Description"
+          className="mt-4 border rounded p-4"
           onChange={(e) =>
             updateFormInput({ ...formInput, description: e.target.value })
           }
         />
         <input
-          placeholder="Asset Price in Eth"
-          className="mt-2 border rounded p-4"
+          placeholder="Ownership"
+          className="mt-4 border rounded p-4"
           onChange={(e) =>
-            updateFormInput({ ...formInput, price: e.target.value })
+            updateFormInput({ ...formInput, ownership: e.target.value })
+          }
+        />
+        <input
+          placeholder="status"
+          className="mt-4 border rounded p-4"
+          onChange={(e) =>
+            updateFormInput({ ...formInput, status: e.target.value })
+          }
+        />
+        <input
+          placeholder="Warranty Info"
+          className="mt-4 border rounded p-4"
+          onChange={(e) =>
+            updateFormInput({ ...formInput, warranty: e.target.value })
           }
         />
         <input type="file" name="Asset" className="my-4" onChange={onChange} />
         {fileUrl && <img className="rounded mt-4" width="350" src={fileUrl} />}
         <button
           onClick={listNFTForSale}
-          className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg"
+          className="font-bold mt-4 bg-blue-500 text-white rounded p-4 shadow-lg"
         >
           Create NFT
         </button>
