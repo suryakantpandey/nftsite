@@ -19,6 +19,7 @@ mongoose.connect(
 );
 
 const itemsSchema = new mongoose.Schema({
+  id: String,
   name: String,
   description: String,
   ownership: String,
@@ -29,10 +30,22 @@ const itemsSchema = new mongoose.Schema({
 
 const Item = new mongoose.model("Item", itemsSchema);
 
+app.get("/:id", function (req, res) {
+  const id = req.params.id;
+  Item.find({ id }, function (err, foundItem) {
+    if (!foundItem || foundItem.length === 0) {
+      console.log(err);
+    } else {
+      res.json(foundItem);
+    }
+  });
+});
+
 app.post("/", function (req, res) {
   const nft = req.body;
 
   const item = new Item({
+    id: nft.id,
     name: nft.name,
     description: nft.description,
     ownership: nft.ownership,
