@@ -4,6 +4,7 @@ import { create as ipfsHttpClient } from "ipfs-http-client";
 import { useRouter } from "next/router";
 import Web3Modal from "web3modal";
 import axios from "axios";
+import uniqid from "uniqid";
 
 const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
@@ -15,6 +16,7 @@ export default function CreateItem() {
   const [fileUrl, setFileUrl] = useState(null);
   const [formInput, updateFormInput] = useState({
     price: "0.0",
+    id: uniqid(),
     name: "",
     description: "",
     ownership: "",
@@ -36,7 +38,8 @@ export default function CreateItem() {
     }
   }
   async function uploadToIPFS() {
-    const { name, description, price, ownership, status, warranty } = formInput;
+    const { name, description, price, ownership, status, warranty, id } =
+      formInput;
     if (
       !name ||
       !description ||
@@ -49,6 +52,7 @@ export default function CreateItem() {
       return;
     /* first, upload to IPFS */
     const data = JSON.stringify({
+      id,
       name,
       description,
       ownership,
@@ -96,6 +100,7 @@ export default function CreateItem() {
 
     await transaction.wait();
     const item = {
+      id: formInput.id,
       name: formInput.name,
       description: formInput.description,
       ownership: formInput.ownership,
