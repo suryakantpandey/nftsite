@@ -4,6 +4,7 @@ import axios from "axios";
 import Web3Modal from "web3modal";
 import { marketplaceAddress } from "../config";
 import NFTMarketplace from "../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
+import "antd/dist/antd.css";
 
 export default function Home() {
   const [nfts, setNfts] = useState([]);
@@ -94,15 +95,15 @@ export default function Home() {
                   <p className="">Warranty Info: {nft.warranty}</p>
                 </div>
               </div>
-              {/* <div className="p-4 bg-black">
+              <div className="p-4 bg-black">
                 <p className="text-2xl font-bold text-white">{nft.price} ETH</p>
                 <button
                   className="mt-4 w-full bg-blue-500 text-white font-bold py-2 px-12 rounded"
                   onClick={() => buyNft(nft)}
                 >
-                  Buy
+                  Transfer
                 </button>
-              </div> */}
+              </div>
             </div>
           ))}
         </div>

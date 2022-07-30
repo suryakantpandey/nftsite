@@ -7,6 +7,7 @@ import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Web3Modal from "web3modal";
+import QRCode from "qrcode";
 
 import { marketplaceAddress } from "../config";
 
@@ -31,9 +32,16 @@ export default function CreatorDashboard() {
   const handleClose = () => setOpen(false);
   const [nfts, setNfts] = useState([]);
   const [loadingState, setLoadingState] = useState("not-loaded");
+  const [imageUrl, setImageUrl] = useState("");
+  const [imageData, setImageData] = useState([]);
+
   useEffect(() => {
     loadNFTs();
   }, []);
+  async function generateQR(id) {
+    const response = await QRCode.toDataURL(id);
+    setImageUrl(response);
+  }
   async function loadNFTs() {
     const web3Modal = new Web3Modal();
     const connection = await web3Modal.connect();
@@ -77,11 +85,19 @@ export default function CreatorDashboard() {
           {nfts.map((nft, i) => (
             <div
               key={i}
-              className="border shadow rounded-xl overflow-hidden"
+              className="border shadow rounded-xl overflow-hidden cursor-pointer"
               onClick={() => {
                 axios
                   .get(`http://localhost:4000/${nft.id}`)
                   .then((res) => {
+                    axios
+                      .get(res.data[0].url)
+                      .then((res) => {
+                        setImageData(res.data);
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                      });
                     setNftInfo(res.data[0]);
                   })
                   .catch((err) => {
@@ -91,51 +107,60 @@ export default function CreatorDashboard() {
               }}
             >
               <img src={nft.image} className="rounded p-4" />
-              {/* <div className="p-4 bg-black">
-                <p className="text-2xl font-bold text-white">
-                  Price - {nft.price} Eth
-                </p>
-              </div> */}
-              <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-              >
-                <Box sx={style}>
-                  <p
-                    className="float-right text-xl cursor-pointer"
-                    onClick={() => {
-                      setOpen(false);
-                    }}
-                  >
-                    X
-                  </p>
-
-                  <img src={nftInfo.url} className="rounded p-4" />
-                  <Typography
-                    id="modal-modal-title"
-                    variant="h6"
-                    component="h2"
-                  >
-                    Name: {nftInfo.name}
-                  </Typography>
-                  <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    Description: {nftInfo.description}
-                  </Typography>
-                  <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    Ownership: {nftInfo.ownership}
-                  </Typography>
-                  <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    Status: {nftInfo.status}
-                  </Typography>
-                  <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    WarrantyInfo: {nftInfo.warrantyInfo}
-                  </Typography>
-                </Box>
-              </Modal>
             </div>
           ))}
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={style}>
+              <p
+                className="float-right text-xl cursor-pointer"
+                onClick={() => {
+                  setOpen(false);
+                }}
+              >
+                X
+              </p>
+              <img src={imageData.image} className="rounded p-4" />
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Name: {nftInfo.name}
+              </Typography>
+              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                Description: {nftInfo.description}
+              </Typography>
+              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                Ownership: {nftInfo.ownership}
+              </Typography>
+              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                Status: {nftInfo.status}
+              </Typography>
+              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                WarrantyInfo: {nftInfo.warrantyInfo}
+              </Typography>
+              <Typography
+                id="modal-modal-description"
+                sx={{ mt: 2 }}
+                onClick={() => {
+                  generateQR(nftInfo.id);
+                }}
+              >
+                <button className="border-2 p-2 bg-blue-500 text-white">
+                  Generate QR
+                </button>
+                <br />
+                <br />
+                {imageUrl ? (
+                  <a href={imageUrl} download>
+                    {" "}
+                    <img src={imageUrl} />
+                  </a>
+                ) : null}
+              </Typography>
+            </Box>
+          </Modal>
         </div>
       </div>
     </div>
