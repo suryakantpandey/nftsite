@@ -40,6 +40,24 @@ app.get("/:id", function (req, res) {
     }
   });
 });
+app.delete("/decay/:id" , function(req,res){
+  const id = req.params.id;
+  Item.find({ id }, function (err, foundItem) {
+    if (!foundItem || foundItem.length === 0) {
+      console.log(err);
+    } else {
+      
+      foundItem.remove()
+      .then((result)=>{
+        console.log(foundItem); 
+        res.json({result});
+      })
+      .catch((err)=>{
+        console.log(err);
+      })
+    }
+  });
+})
 
 app.post("/", function (req, res) {
   const nft = req.body;

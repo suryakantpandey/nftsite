@@ -2,7 +2,7 @@ import React, { useEffect , useState } from 'react';
 import {QrScanner} from "react-qrcode-scanner";
 import axios from "axios";
 
-function validateNFT() {
+function decayNFT() {
     const [value, setValue] = useState(0);
     const [foundval , setFoundVal] = useState("Not found");
 
@@ -10,10 +10,10 @@ function validateNFT() {
         console.log(value);
         setValue(parseInt(value));
         axios
-        .get(`http://localhost:4000/${value}`)
+        .get(`http://localhost:4000/decay/${value}`)
         .then((res) => {
                 console.log(res);
-                setFoundVal("NFT validated");
+                foundval = "Nft decayed";
             })
             .catch((err) => {
               console.log(err);
@@ -25,23 +25,22 @@ function validateNFT() {
         console.log({error})
     }
     const  video = {
-        width: '30%',
-        height: '35%',
+        width: '40%',
+        height: '45%',
     }
 
         
     return (
 
         <div className="flex justify-center">
-            <div><h1 className="m-10 text-gray-900">Validate your nft here</h1></div>
-            <div>To Verify you NFT please scan the QR code</div>
+            <div><h1 className=" text-gray-900">Validate your nft here</h1></div>
             <div> {
                 (value ===0) ? <div  className="mt-10"><QrScanner
                 onScan={handleScan}
                 onError={handleError}
                 video
             /></div>:
-            <div className='m-10 card'>
+            <div className='card'>
                 <h2>{foundval}</h2>
             </div>
             }</div>
@@ -51,4 +50,4 @@ function validateNFT() {
     );
 }
 
-export default validateNFT;
+export default decayNFT;

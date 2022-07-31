@@ -23,6 +23,9 @@ function MyApp({ Component, pageProps }) {
           <Link href="/validatenft">
             <a className="mr-6 text-blue-500">ValidateNFT</a>
           </Link>
+          <Link href="/decaynft">
+            <a className="mr-6 text-blue-500">DecayNFT</a>
+          </Link>
         </div>
       </nav>
       <Component {...pageProps} />
