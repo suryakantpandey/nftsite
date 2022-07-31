@@ -6,10 +6,10 @@ function MyApp({ Component, pageProps }) {
   return (
     <div>
       <nav className="border-b p-6">
-        <p className="text-4xl font-bold">NFT Marketplace</p>
+        <p className="text-4xl font-bold">NFT Listings for Products</p>
         <div className="flex mt-4">
           <Link href="/">
-            <a className="mr-4 text-blue-500">Home</a>
+            <a className="mr-4 text-blue-500">All listings</a>
           </Link>
           <Link href="/create-nft">
             <a className="mr-6 text-blue-500">Mint NFT</a>
@@ -19,6 +19,9 @@ function MyApp({ Component, pageProps }) {
           </Link>
           <Link href="/dashboard">
             <a className="mr-6 text-blue-500">Dashboard</a>
+          </Link>
+          <Link href="/validatenft">
+            <a className="mr-6 text-blue-500">ValidateNFT</a>
           </Link>
         </div>
       </nav>

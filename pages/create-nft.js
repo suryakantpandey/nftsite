@@ -122,8 +122,8 @@ export default function CreateItem() {
       .catch((err) => {
         console.log(err);
       });
-
-    router.push("/");
+    
+    router.push("/dashboard");
   }
 
   return (

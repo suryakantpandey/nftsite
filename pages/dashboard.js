@@ -87,9 +87,11 @@ export default function CreatorDashboard() {
               key={i}
               className="border shadow rounded-xl overflow-hidden cursor-pointer"
               onClick={() => {
+                console.log(nft.id);
                 axios
                   .get(`http://localhost:4000/${nft.id}`)
                   .then((res) => {
+                    console.log(res);
                     axios
                       .get(res.data[0].url)
                       .then((res) => {
